@@ -1,7 +1,7 @@
-import React , {
+import React, {
   useState,
   useEffect,
-  ReactNode
+  FC
 } from 'react';
 import { SignUpParams } from "@aws-amplify/auth/lib-esm/types";
 import { CognitoUser } from "amazon-cognito-identity-js";
@@ -10,7 +10,7 @@ import Amplify, {
 } from "aws-amplify";
 import { AuthContext } from './AuthContext';
 
-export interface ICognitoAuthProviderParams {
+interface Props extends Readonly<{
   awsConfig: {
     Auth: {
       userPoolId: string;
@@ -18,17 +18,26 @@ export interface ICognitoAuthProviderParams {
       region: string;
     };
   };
-  chidlren: ReactNode;
-};
+  children: React.ReactNode;
+}> {};
 
-export default (props: ICognitoAuthProviderParams) => {
+export const CognitoAuthProvider:React.FC<Props> = (props: Props) => {
   const awsAuthConfig = {
     authenticationFlowType: 'USER_PASSWORD_AUTH',
     ...props.awsConfig.Auth
   };
 
   Amplify.configure({
-    Auth: awsAuthConfig
+    Auth: awsAuthConfig,
+    API: {
+      endpoints: [{
+        name: 'withAuth',
+        url: 'https://0q0wxzgm42.execute-api.ap-northeast-1.amazonaws.com/dev'
+      },{
+        name: 'withoutAuth',
+        url: 'https://0q0wxzgm42.execute-api.ap-northeast-1.amazonaws.com/dev'
+      }]
+    }
   });
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);

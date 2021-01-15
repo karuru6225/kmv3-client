@@ -9,7 +9,7 @@ import {
   Button,
   Dimensions
 } from 'react-native';
-import axios from 'axios';
+import API from '@aws-amplify/api';
 import { useAuth } from '../cognito/AuthContext';
 
 const styles = StyleSheet.create({
@@ -34,12 +34,10 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await axios({
-          method: 'get',
-          url: 'https://0q0wxzgm42.execute-api.ap-northeast-1.amazonaws.com/dev/withAuth'
-        });
-        setContents(res.data);
+        const res = await API.get('withoutAuth', '/withoutAuth', {});
+        setContents(JSON.stringify(res));
       } catch (e) {
+        setContents(e.toString());
       }
     })();
   }, [navigation]);
